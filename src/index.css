@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=Syne:wght@700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans antialiased overflow-x-hidden;
+  }
+  ::-moz-selection {
+    background-color: rgba(5, 150, 105, 0.2);
+    color: #059669;
+  }
+  ::selection {
+    background-color: rgba(5, 150, 105, 0.2);
+    color: #059669;
+  }
+}
+
+@layer utilities {
+  .text-stroke {
+    -webkit-text-stroke: 1px currentColor;
+    color: transparent;
+  }
+
+  .text-stroke-2 {
+    -webkit-text-stroke: 2px currentColor;
+    color: transparent;
+  }
+
+  .glass-panel {
+    @apply bg-white/85 backdrop-blur-md border border-slate-200/60;
+  }
+
+  .glass-panel-heavy {
+    @apply bg-white/95 backdrop-blur-lg border border-slate-300/40;
+  }
+
+  .cyber-glow-purple {
+    box-shadow: 0 4px 20px -2px rgba(5, 150, 105, 0.08);
+  }
+
+  .cyber-glow-purple-hover:hover {
+    box-shadow: 0 8px 24px -3px rgba(5, 150, 105, 0.16);
+  }
+
+  .cyber-glow-pink {
+    box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.08);
+  }
+
+  .cyber-glow-pink-hover:hover {
+    box-shadow: 0 8px 24px -3px rgba(16, 185, 129, 0.16);
+  }
+
+  .cyber-glow-cyan {
+    box-shadow: 0 4px 20px -2px rgba(13, 148, 136, 0.08);
+  }
+
+  .cyber-glow-cyan-hover:hover {
+    box-shadow: 0 8px 24px -3px rgba(13, 148, 136, 0.16);
+  }
+
+  .text-gradient-neon {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-green via-emerald-600 to-teal-700;
+  }
+
+  .text-gradient-pink {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-green to-emerald-500;
+  }
+}
+
+/* Custom Webkit Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-50;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full transition-colors duration-500;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #059669;
+}
+
+#root {
+  @apply min-h-screen relative flex flex-col;
+}
+
+/* Soft Silver and Emerald Radial Blurs */
+.ambient-glow-1 {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.04) 0%, rgba(0,0,0,0) 70%);
+}
+
+.ambient-glow-2 {
+  background: radial-gradient(circle, rgba(5, 150, 105, 0.03) 0%, rgba(0,0,0,0) 70%);
+}
+
+.ambient-glow-3 {
+  background: radial-gradient(circle, rgba(148, 163, 184, 0.06) 0%, rgba(0,0,0,0) 70%);
+}
+
+/* Subtle Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #10b981 0%, #1e293b 50%, #059669 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 6s linear infinite;
+}
