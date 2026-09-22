@@ -119,9 +119,35 @@ const AdminPage: React.FC = () => {
     }
   }, [isAuthenticated]);
 
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    }
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    if (products.length > 0) {
+      const timer = setTimeout(() => {
+        fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(products)
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              setLastSynced(new Date().toLocaleTimeString());
+            }
+          })
+          .catch(err => console.error('Failed to sync products to server:', err));
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
   }, [products]);
 
