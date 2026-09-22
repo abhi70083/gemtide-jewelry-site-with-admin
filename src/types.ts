@@ -7,6 +7,6 @@ export type Product = {
   offer: number; // percentage discount, 0-100
   active: boolean;
   image: string;
-  category?: string;
+  category?: 'Rings' | 'Chains' | 'Watches' | 'Apparel' | 'Bags' | 'T-Shirts' | 'Artifacts' | 'jewelry' | string;
   likes?: number;
 };

@@ -10,7 +10,7 @@ export const initialProducts: Product[] = [
     offer: 0,
     active: true,
     image: 'https://images.unsplash.com/photo-1605100804763-247f6612860e?auto=format&fit=crop&q=80&w=800',
-    category: 'jewelry'
+    category: 'Rings'
   },
   {
     id: 2,
@@ -21,7 +21,7 @@ export const initialProducts: Product[] = [
     offer: 15,
     active: true,
     image: 'https://images.unsplash.com/photo-1599643477874-cf4a7b7af06e?auto=format&fit=crop&q=80&w=800',
-    category: 'jewelry'
+    category: 'Rings'
   },
   {
     id: 3,
@@ -32,7 +32,7 @@ export const initialProducts: Product[] = [
     offer: 10,
     active: true,
     image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=800',
-    category: 'jewelry'
+    category: 'Chains'
   },
   {
     id: 4,
@@ -43,7 +43,7 @@ export const initialProducts: Product[] = [
     offer: 5,
     active: true,
     image: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314?auto=format&fit=crop&q=80&w=800',
-    category: 'jewelry'
+    category: 'Watches'
   },
   {
     id: 5,
@@ -54,7 +54,7 @@ export const initialProducts: Product[] = [
     offer: 0,
     active: true,
     image: 'https://images.unsplash.com/photo-1583391733958-d25e07fac0ec?auto=format&fit=crop&q=80&w=800',
-    category: 'jewelry'
+    category: 'Apparel'
   },
   {
     id: 6,
@@ -65,7 +65,7 @@ export const initialProducts: Product[] = [
     offer: 0,
     active: true,
     image: 'https://images.unsplash.com/photo-1599643478514-4a42eb67e5bb?auto=format&fit=crop&q=80&w=800',
-    category: 'jewelry'
+    category: 'Chains'
   },
   // Bags
   {
@@ -77,7 +77,7 @@ export const initialProducts: Product[] = [
     offer: 10,
     active: true,
     image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&q=80&w=800',
-    category: 'bags'
+    category: 'Bags'
   },
   {
     id: 8,
@@ -88,7 +88,7 @@ export const initialProducts: Product[] = [
     offer: 0,
     active: true,
     image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800',
-    category: 'bags'
+    category: 'Bags'
   },
   // T-Shirts
   {
@@ -100,7 +100,7 @@ export const initialProducts: Product[] = [
     offer: 5,
     active: true,
     image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=800',
-    category: 't-shirts'
+    category: 'T-Shirts'
   },
   {
     id: 10,
@@ -111,7 +111,7 @@ export const initialProducts: Product[] = [
     offer: 0,
     active: true,
     image: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&q=80&w=800',
-    category: 't-shirts'
+    category: 'T-Shirts'
   },
   // Artifacts
   {
@@ -123,7 +123,7 @@ export const initialProducts: Product[] = [
     offer: 0,
     active: true,
     image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=800',
-    category: 'artifacts'
+    category: 'Artifacts'
   },
   {
     id: 12,
@@ -134,6 +134,6 @@ export const initialProducts: Product[] = [
     offer: 15,
     active: true,
     image: 'https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&q=80&w=800',
-    category: 'artifacts'
+    category: 'Artifacts'
   }
 ];

@@ -75,6 +75,7 @@ const AdminPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(() => loadProducts());
   const [orders, setOrders] = useState<any[]>([]);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [sectionFilter, setSectionFilter] = useState<string>('All');
 
   // Database raw state & inspector state
   const [rawDbJson, setRawDbJson] = useState<string>('');
@@ -524,7 +525,7 @@ const AdminPage: React.FC = () => {
                   </label>
                   
                   {/* Segmented OTP Boxes */}
-                  <div className="flex justify-between gap-2">
+                  <div className="flex justify-between gap-1.5 sm:gap-2">
                     {otpDigits.map((digit, idx) => (
                       <input
                         key={idx}
@@ -534,7 +535,7 @@ const AdminPage: React.FC = () => {
                         value={digit}
                         onChange={(e) => handleOtpChange(idx, e.target.value)}
                         onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                        className="w-11 h-12 text-center bg-slate-950 border border-slate-800 rounded-xl text-lg font-bold font-mono text-brand-green outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all"
+                        className="w-9 h-11 sm:w-11 sm:h-12 text-center bg-slate-950 border border-slate-800 rounded-xl text-base sm:text-lg font-bold font-mono text-brand-green outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all"
                       />
                     ))}
                   </div>
@@ -593,33 +594,49 @@ const AdminPage: React.FC = () => {
       <div className="absolute top-[60vh] right-[-10%] w-[55vw] h-[55vw] rounded-full blur-[180px] ambient-glow-2 pointer-events-none z-0" />
 
       {/* Header - Modern Glassmorphic */}
-      <header className="relative z-10 border-b border-slate-200 bg-white/80 backdrop-blur-xl py-4 shadow-sm sticky top-0">
-        <nav className="mx-auto flex max-w-[1400px] items-center justify-between px-6 md:px-12">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full border border-brand-green/20 flex items-center justify-center text-brand-green font-serif text-sm font-bold bg-brand-green/10 shadow-xs">
-              GT
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold tracking-[0.15em] text-slate-900 font-serif uppercase">
-                  GemTide Portal
-                </span>
-                <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
-                  <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                  2FA Active
+      <header className="relative z-10 border-b border-slate-200 bg-white/80 backdrop-blur-xl py-3.5 sm:py-4 shadow-sm sticky top-0">
+        <nav className="mx-auto flex flex-col md:flex-row max-w-[1400px] items-stretch md:items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6 md:px-12">
+          <div className="flex items-center justify-between md:justify-start gap-3">
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="GemTide" className="h-9 w-9 rounded-xl object-cover border border-brand-green/20 shadow-xs shrink-0" />
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs sm:text-sm font-semibold tracking-[0.15em] text-slate-900 font-serif uppercase">
+                    GemTide Portal
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                    2FA
+                  </span>
+                </div>
+                <span className="text-[9px] sm:text-[10px] text-slate-500 font-sans tracking-[0.05em]">
+                  Control Center
                 </span>
               </div>
-              <span className="text-[10px] text-slate-500 font-sans tracking-[0.05em]">
-                Inventory · Orders · Database Control Center
-              </span>
+            </div>
+
+            <div className="flex items-center gap-2 md:hidden">
+              <Link
+                to="/"
+                className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[8px] font-bold uppercase tracking-wider text-slate-700"
+              >
+                Store
+              </Link>
+              <button
+                onClick={handleLockPortal}
+                className="p-1.5 rounded-full bg-red-50 text-red-700 border border-red-200"
+                title="Lock Portal"
+              >
+                <LogOut className="w-3.5 h-3.5 text-red-600" />
+              </button>
             </div>
           </div>
           
           {/* Main Navigation Tabs */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-full border border-slate-200 shadow-inner">
+          <div className="flex items-center bg-slate-100 p-1 rounded-full border border-slate-200 shadow-inner overflow-x-auto scrollbar-none justify-center">
             <button
               onClick={() => setActiveTab('inventory')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-medium transition-all whitespace-nowrap shrink-0 ${
                 activeTab === 'inventory'
                   ? 'bg-white text-slate-900 shadow-xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
@@ -630,7 +647,7 @@ const AdminPage: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('orders')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-medium transition-all whitespace-nowrap shrink-0 ${
                 activeTab === 'orders'
                   ? 'bg-white text-slate-900 shadow-xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
@@ -641,7 +658,7 @@ const AdminPage: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('database')}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-medium transition-all whitespace-nowrap shrink-0 ${
                 activeTab === 'database'
                   ? 'bg-brand-green text-white shadow-xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
@@ -652,7 +669,7 @@ const AdminPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-3 text-xs font-sans">
+          <div className="hidden md:flex items-center gap-3 text-xs font-sans">
             <span className="hidden lg:inline-block rounded-full border border-slate-200 bg-slate-100 px-3.5 py-1.5 text-slate-650 tracking-wider uppercase text-[10px]">
               Live Stock: <span className="text-brand-green font-bold">{totalStock} pcs</span>
             </span>
@@ -677,11 +694,11 @@ const AdminPage: React.FC = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12 py-8">
+      <main className="relative z-10 mx-auto max-w-[1400px] px-4 sm:px-6 md:px-12 py-6 sm:py-8">
 
         {/* Global Toast Message */}
         {message && (
-          <div className={`mb-6 rounded-2xl border px-6 py-3.5 text-xs font-sans tracking-wide shadow-sm flex items-center gap-2.5 transition-all animate-in fade-in slide-in-from-top-2 ${
+          <div className={`mb-6 rounded-2xl border px-5 sm:px-6 py-3.5 text-xs font-sans tracking-wide shadow-sm flex items-center gap-2.5 transition-all animate-in fade-in slide-in-from-top-2 ${
             message.type === 'error' 
               ? 'border-red-200 bg-red-50 text-red-700' 
               : 'border-brand-green/20 bg-emerald-50 text-brand-green'
@@ -698,36 +715,186 @@ const AdminPage: React.FC = () => {
         {/* TAB 1: INVENTORY & PRODUCTS */}
         {activeTab === 'inventory' && (
           <div>
-            <div className="flex flex-wrap items-center justify-between gap-6 pb-6 border-b border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
               <div>
-                <h1 className="text-3xl font-serif text-slate-900 tracking-wide font-bold">Merchant Inventory</h1>
+                <h1 className="text-2xl sm:text-3xl font-serif text-slate-900 tracking-wide font-bold">Merchant Inventory</h1>
                 <p className="mt-1 text-xs text-slate-500 max-w-xl font-sans tracking-wide">
                   Update live prices, active discount offers, and warehouse stock levels. Modifications sync directly to store catalog via <code className="bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded text-[11px]">db.json</code>.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3 text-[10px] font-bold tracking-[0.15em] uppercase">
+              <div className="flex items-center gap-2.5 text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase">
                 <button
                   onClick={handleSaveInventory}
-                  className="flex items-center gap-2 rounded-full bg-brand-green hover:bg-brand-green-dark text-white px-7 py-3 transition-all duration-300 shadow-md"
+                  className="flex-1 sm:flex-initial flex items-center justify-center gap-2 rounded-full bg-brand-green hover:bg-brand-green-dark text-white px-5 sm:px-7 py-2.5 sm:py-3 transition-all duration-300 shadow-md"
                 >
                   <Save className="w-3.5 h-3.5" />
                   Save Changes
                 </button>
                 <button
                   onClick={handleReset}
-                  className="rounded-full border border-slate-200 bg-white hover:border-red-500 hover:text-red-650 text-slate-700 px-7 py-3 transition-all duration-300 shadow-xs"
+                  className="rounded-full border border-slate-200 bg-white hover:border-red-500 hover:text-red-650 text-slate-700 px-4 sm:px-7 py-2.5 sm:py-3 transition-all duration-300 shadow-xs"
                 >
-                  Reset Defaults
+                  Reset
                 </button>
               </div>
             </div>
 
-            {/* Product Table Container */}
-            <div className="mt-8 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
+            {/* Section Organizer Bar */}
+            <div className="mt-6 flex flex-col gap-3 bg-white border border-slate-200 p-4 rounded-2xl shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <span className="text-xs font-tech font-bold uppercase tracking-wider text-slate-700">
+                  ✦ Section & Category Organizer
+                </span>
+                <span className="text-[10px] text-slate-400 font-sans">
+                  Define which section each item displays in (Rings, Chains, Watches, Apparel, Bags, T-Shirts, Artifacts)
+                </span>
+              </div>
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+                {['All', 'Rings', 'Chains', 'Watches', 'Apparel', 'Bags', 'T-Shirts', 'Artifacts'].map((sec) => {
+                  const count = sec === 'All'
+                    ? products.length
+                    : products.filter(p => (p.category || '').toLowerCase() === sec.toLowerCase()).length;
+
+                  return (
+                    <button
+                      key={sec}
+                      onClick={() => setSectionFilter(sec)}
+                      className={`px-3.5 py-1.5 rounded-full text-[10px] font-tech font-bold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 border ${
+                        sectionFilter === sec
+                          ? 'bg-brand-green border-brand-green text-white shadow-xs'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
+                      }`}
+                    >
+                      {sec} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Mobile Cards View for Inventory (Screen width < 1024px) */}
+            <div className="mt-6 space-y-4 lg:hidden">
+              {products
+                .filter(p => sectionFilter === 'All' || (p.category || '').toLowerCase() === sectionFilter.toLowerCase())
+                .map((p) => {
+                  const finalPrice = effectivePrice(p.price, p.offer);
+                  return (
+                    <div key={p.id} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
+                      <div className="flex items-start gap-3">
+                        {p.image && (
+                          <img src={p.image} alt={p.name} className="w-16 h-16 rounded-xl object-cover border border-slate-100 shrink-0" />
+                        )}
+                        <div className="flex-grow space-y-2">
+                          <div className="flex justify-between items-start">
+                            <input
+                              type="text"
+                              value={p.name}
+                              onChange={(e) => handleChange(p.id, 'name', e.target.value)}
+                              className="font-serif font-bold text-slate-900 border border-slate-200 bg-slate-50 px-3 py-1.5 rounded-xl text-xs w-full mr-2 focus:outline-none focus:border-brand-green"
+                            />
+                            <button
+                              onClick={() => handleToggleActive(p.id)}
+                              className={`rounded-full px-3 py-1 text-[8px] font-tech font-bold uppercase tracking-wider shrink-0 border ${
+                                p.active
+                                  ? 'bg-brand-green/10 text-brand-green border-brand-green/30'
+                                  : 'bg-slate-100 text-slate-500 border-slate-200'
+                              }`}
+                            >
+                              {p.active ? 'Active' : 'Hidden'}
+                            </button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="cursor-pointer rounded-full border border-slate-200 bg-slate-50 text-[9px] font-bold uppercase tracking-wider text-slate-700 px-3 py-1">
+                              Upload Photo
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => handleImageUpload(p.id, e)}
+                              />
+                            </label>
+                            <span className="text-[10px] text-slate-400 font-tech">♥ {p.likes || 0} Likes</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[9px] font-tech font-bold text-slate-400 uppercase tracking-wider mb-1">Target Section / Category</label>
+                        <select
+                          value={p.category || 'Rings'}
+                          onChange={(e) => handleChange(p.id, 'category', e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-tech font-bold text-slate-800 outline-none focus:border-brand-green"
+                        >
+                          <option value="Rings">Rings Section</option>
+                          <option value="Chains">Chains Section</option>
+                          <option value="Watches">Watches Section</option>
+                          <option value="Apparel">Apparel Section</option>
+                          <option value="Bags">Bags Section</option>
+                          <option value="T-Shirts">T-Shirts Section</option>
+                          <option value="Artifacts">Artifacts Section</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[9px] font-tech font-bold text-slate-400 uppercase tracking-wider mb-1">Tagline</label>
+                        <input
+                          type="text"
+                          value={p.tag}
+                          onChange={(e) => handleChange(p.id, 'tag', e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 text-[10px] font-tech uppercase tracking-wider">
+                        <div>
+                          <label className="block text-slate-400 mb-1">Base Price (₹)</label>
+                          <input
+                            type="number"
+                            min={0}
+                            value={p.price}
+                            onChange={(e) => handleChange(p.id, 'price', e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-center text-xs font-bold text-slate-800"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-400 mb-1">Offer %</label>
+                          <input
+                            type="number"
+                            min={0}
+                            max={90}
+                            value={p.offer}
+                            onChange={(e) => handleChange(p.id, 'offer', e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-center text-xs font-bold text-brand-green"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-400 mb-1">Stock (pcs)</label>
+                          <input
+                            type="number"
+                            min={0}
+                            value={p.stock}
+                            onChange={(e) => handleChange(p.id, 'stock', e.target.value)}
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2 py-1.5 text-center text-xs font-bold text-slate-800"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex justify-between items-center text-xs">
+                        <span className="text-[10px] font-tech uppercase text-slate-400">Effective Selling Price</span>
+                        <span className="font-bold text-brand-green">{formatPrice(finalPrice)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            {/* Desktop Product Table Container (Screen width >= 1024px) */}
+            <div className="mt-8 hidden lg:block overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
               <table className="min-w-full text-left text-xs font-sans">
                 <thead className="border-b border-slate-200 bg-slate-50 text-[10px] font-tech tracking-[0.2em] text-slate-650 uppercase font-bold">
                   <tr>
                     <th className="px-6 py-4">Product Name</th>
+                    <th className="px-6 py-4">Section / Category</th>
                     <th className="px-6 py-4">Showcase</th>
                     <th className="px-6 py-4">Tagline</th>
                     <th className="px-6 py-4">Base Price (₹)</th>
@@ -739,115 +906,132 @@ const AdminPage: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-250/50">
-                  {products.map((p) => {
-                    const finalPrice = effectivePrice(p.price, p.offer);
+                  {products
+                    .filter(p => sectionFilter === 'All' || (p.category || '').toLowerCase() === sectionFilter.toLowerCase())
+                    .map((p) => {
+                      const finalPrice = effectivePrice(p.price, p.offer);
 
-                    return (
-                      <tr
-                        key={p.id}
-                        className="hover:bg-slate-50/50 transition-colors duration-200"
-                      >
-                        <td className="px-6 py-4 align-top">
-                          <input
-                            className="w-44 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-serif"
-                            value={p.name}
-                            onChange={(e) =>
-                              handleChange(p.id, 'name', e.target.value)
-                            }
-                          />
-                        </td>
-                        <td className="px-6 py-4 align-top">
-                          <div className="flex flex-col items-start gap-2">
-                            {p.image && (
-                              <img
-                                src={p.image}
-                                alt="preview"
-                                className="h-12 w-12 rounded-xl object-cover border border-slate-200 shadow-xs"
-                              />
-                            )}
-                            <label className="cursor-pointer rounded-full border border-slate-200 bg-white hover:bg-slate-50 hover:border-brand-green text-[9px] font-bold uppercase tracking-wider text-slate-700 px-3 py-1.5 transition-all shadow-xs">
-                              Upload
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={(e) => handleImageUpload(p.id, e)}
-                              />
-                            </label>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 align-top">
-                          <textarea
-                            className="h-16 w-60 resize-none rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-sans"
-                            value={p.tag}
-                            onChange={(e) =>
-                              handleChange(p.id, 'tag', e.target.value)
-                            }
-                          />
-                        </td>
-                        <td className="px-6 py-4 align-top">
-                          <input
-                            type="number"
-                            min={0}
-                            className="w-24 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-sans text-center"
-                            value={p.price}
-                            onChange={(e) =>
-                              handleChange(p.id, 'price', e.target.value)
-                            }
-                          />
-                        </td>
-                        <td className="px-6 py-4 align-top">
-                          <input
-                            type="number"
-                            min={0}
-                            max={90}
-                            className="w-16 rounded-full border border-slate-200 bg-slate-50 px-2 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-sans text-center"
-                            value={p.offer}
-                            onChange={(e) =>
-                              handleChange(p.id, 'offer', e.target.value)
-                            }
-                          />
-                        </td>
-                        <td className="px-6 py-4 align-top text-slate-850 font-sans">
-                          <div className="flex flex-col">
-                            <span className="font-bold text-brand-green">{formatPrice(finalPrice)}</span>
-                            {p.offer > 0 && (
-                              <span className="text-[10px] text-slate-400 line-through mt-0.5">
-                                {formatPrice(p.price)}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 align-top">
-                          <input
-                            type="number"
-                            min={0}
-                            className="w-16 rounded-full border border-slate-200 bg-slate-50 px-2 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-sans text-center"
-                            value={p.stock}
-                            onChange={(e) =>
-                              handleChange(p.id, 'stock', e.target.value)
-                            }
-                          />
-                        </td>
-                        <td className="px-6 py-4 align-top">
-                          <button
-                            onClick={() => handleToggleActive(p.id)}
-                            className={`rounded-full px-4 py-2 text-[9px] font-tech font-bold uppercase tracking-wider transition-all duration-300 shadow-xs border ${
-                              p.active
-                                ? 'bg-brand-green/10 text-brand-green border-brand-green/30 hover:bg-brand-green/20'
-                                : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200/70 hover:text-slate-800'
-                            }`}
-                          >
-                            {p.active ? 'Active' : 'Hidden'}
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 align-top">
-                          <div className="flex items-center gap-1.5 mt-2 font-bold text-slate-700">
-                            <span className="text-red-500 text-sm">♥</span>
-                            <span className="font-sans text-xs">{p.likes || 0}</span>
-                          </div>
-                        </td>
-                      </tr>
+                      return (
+                        <tr
+                          key={p.id}
+                          className="hover:bg-slate-50/50 transition-colors duration-200"
+                        >
+                          <td className="px-6 py-4 align-top">
+                            <input
+                              className="w-44 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-serif"
+                              value={p.name}
+                              onChange={(e) =>
+                                handleChange(p.id, 'name', e.target.value)
+                              }
+                            />
+                          </td>
+                          <td className="px-6 py-4 align-top">
+                            <select
+                              value={p.category || 'Rings'}
+                              onChange={(e) => handleChange(p.id, 'category', e.target.value)}
+                              className="w-32 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-tech font-bold text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all"
+                            >
+                              <option value="Rings">Rings</option>
+                              <option value="Chains">Chains</option>
+                              <option value="Watches">Watches</option>
+                              <option value="Apparel">Apparel</option>
+                              <option value="Bags">Bags</option>
+                              <option value="T-Shirts">T-Shirts</option>
+                              <option value="Artifacts">Artifacts</option>
+                            </select>
+                          </td>
+                          <td className="px-6 py-4 align-top">
+                            <div className="flex flex-col items-start gap-2">
+                              {p.image && (
+                                <img
+                                  src={p.image}
+                                  alt="preview"
+                                  className="h-12 w-12 rounded-xl object-cover border border-slate-200 shadow-xs"
+                                />
+                              )}
+                              <label className="cursor-pointer rounded-full border border-slate-200 bg-white hover:bg-slate-50 hover:border-brand-green text-[9px] font-bold uppercase tracking-wider text-slate-700 px-3 py-1.5 transition-all shadow-xs">
+                                Upload
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={(e) => handleImageUpload(p.id, e)}
+                                />
+                              </label>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 align-top">
+                            <textarea
+                              className="h-16 w-60 resize-none rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-sans"
+                              value={p.tag}
+                              onChange={(e) =>
+                                handleChange(p.id, 'tag', e.target.value)
+                              }
+                            />
+                          </td>
+                          <td className="px-6 py-4 align-top">
+                            <input
+                              type="number"
+                              min={0}
+                              className="w-24 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-sans text-center"
+                              value={p.price}
+                              onChange={(e) =>
+                                handleChange(p.id, 'price', e.target.value)
+                              }
+                            />
+                          </td>
+                          <td className="px-6 py-4 align-top">
+                            <input
+                              type="number"
+                              min={0}
+                              max={90}
+                              className="w-16 rounded-full border border-slate-200 bg-slate-50 px-2 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-sans text-center"
+                              value={p.offer}
+                              onChange={(e) =>
+                                handleChange(p.id, 'offer', e.target.value)
+                              }
+                            />
+                          </td>
+                          <td className="px-6 py-4 align-top text-slate-850 font-sans">
+                            <div className="flex flex-col">
+                              <span className="font-bold text-brand-green">{formatPrice(finalPrice)}</span>
+                              {p.offer > 0 && (
+                                <span className="text-[10px] text-slate-400 line-through mt-0.5">
+                                  {formatPrice(p.price)}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 align-top">
+                            <input
+                              type="number"
+                              min={0}
+                              className="w-16 rounded-full border border-slate-200 bg-slate-50 px-2 py-2 text-xs text-slate-800 outline-none focus:border-brand-green focus:bg-white transition-all font-sans text-center"
+                              value={p.stock}
+                              onChange={(e) =>
+                                handleChange(p.id, 'stock', e.target.value)
+                              }
+                            />
+                          </td>
+                          <td className="px-6 py-4 align-top">
+                            <button
+                              onClick={() => handleToggleActive(p.id)}
+                              className={`rounded-full px-4 py-2 text-[9px] font-tech font-bold uppercase tracking-wider transition-all duration-300 shadow-xs border ${
+                                p.active
+                                  ? 'bg-brand-green/10 text-brand-green border-brand-green/30 hover:bg-brand-green/20'
+                                  : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200/70 hover:text-slate-800'
+                              }`}
+                            >
+                              {p.active ? 'Active' : 'Hidden'}
+                            </button>
+                          </td>
+                          <td className="px-6 py-4 align-top">
+                            <div className="flex items-center gap-1.5 mt-2 font-bold text-slate-700">
+                              <span className="text-red-500 text-sm">♥</span>
+                              <span className="font-sans text-xs">{p.likes || 0}</span>
+                            </div>
+                          </td>
+                        </tr>
                     );
                   })}
                 </tbody>

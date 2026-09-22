@@ -9,10 +9,10 @@ const WhatsAppChat: React.FC = () => {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-white/90 backdrop-blur-xl border border-slate-200 px-5 py-3 rounded-full shadow-md hover:border-brand-green/40 hover:-translate-y-0.5 transition-all duration-300 group"
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 bg-white/95 backdrop-blur-xl border border-slate-200/90 px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-full shadow-lg hover:border-brand-green/40 hover:-translate-y-0.5 transition-all duration-300 group"
             aria-label="Chat on WhatsApp"
         >
-            <span className="text-[9px] font-tech font-bold uppercase tracking-[0.25em] text-slate-800 group-hover:text-brand-green transition-colors duration-300">
+            <span className="text-[8px] sm:text-[9px] font-tech font-bold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-slate-800 group-hover:text-brand-green transition-colors duration-300">
                 WhatsApp Support
             </span>
             <span className="relative flex h-2 w-2">
