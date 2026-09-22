@@ -348,12 +348,6 @@ Thank you for shopping with GemTide!`;
             </div>
 
             <a href="#contact" className="hover:text-brand-green transition-all duration-300">Support</a>
-            <Link
-              to="/admin"
-              className="text-sm hover:text-emerald-500 transition"
-            >
-              Admin
-            </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-6">
@@ -428,13 +422,6 @@ Thank you for shopping with GemTide!`;
             </div>
 
             <a href="#contact" onClick={() => setIsMenuOpen(false)} className="text-2xl sm:text-3xl font-serif font-bold text-slate-800 hover:text-brand-green tracking-widest transition-colors duration-300">Support</a>
-            <Link
-              to="/admin"
-              onClick={() => setIsMenuOpen(false)}
-              className="text-base font-serif font-bold hover:text-emerald-500 transition"
-            >
-              Admin Portal
-            </Link>
           </motion.div>
         )}
       </AnimatePresence>
@@ -932,12 +919,6 @@ Thank you for shopping with GemTide!`;
               <div className="flex flex-col gap-2 text-[9px] uppercase tracking-wider text-slate-500 font-tech font-bold">
                 <a href="#about" className="hover:text-brand-green transition-colors">About Us</a>
                 <a href="#contact" className="hover:text-brand-green transition-colors">Support</a>
-                <Link
-                  to="/admin"
-                  className="text-xs hover:text-emerald-500 transition font-sans normal-case"
-                >
-                  Admin Portal
-                </Link>
               </div>
             </div>
 
