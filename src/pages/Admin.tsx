@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Product } from '../types';
 import { initialProducts } from '../data/products';
 import { effectivePrice, formatPrice } from '../utils/pricing';
+import { compressImage } from '../utils/imageCompressor';
 import {
   Database,
   Package,
@@ -281,18 +282,19 @@ const AdminPage: React.FC = () => {
     );
   };
 
-  const handleImageUpload = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result;
-      if (typeof result === 'string') {
-        handleChange(id, 'image', result);
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      showToast('Optimizing and uploading image...');
+      const compressedDataUrl = await compressImage(file, 600, 600, 0.8);
+      handleChange(id, 'image', compressedDataUrl);
+      showToast('Image uploaded and synced successfully!');
+    } catch (err) {
+      console.error('Image compression error:', err);
+      showToast('Failed to process image.', 'error');
+    }
   };
 
   const handleReset = () => {
