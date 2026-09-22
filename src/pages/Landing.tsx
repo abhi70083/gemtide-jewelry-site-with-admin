@@ -47,7 +47,7 @@ const LandingPage: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => loadProducts());
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
@@ -75,18 +75,27 @@ const LandingPage: React.FC = () => {
   const categories = ['All', 'Rings', 'Chains', 'Watches', 'Apparel'];
 
   useEffect(() => {
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setProducts(data.filter(p => p.active));
-        } else {
+    const refreshProducts = () => {
+      fetch('/api/products')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            const localStored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
+            if (!localStored) {
+              setProducts(data.filter(p => p.active));
+            } else {
+              setProducts(loadProducts());
+            }
+          } else {
+            setProducts(loadProducts());
+          }
+        })
+        .catch(() => {
           setProducts(loadProducts());
-        }
-      })
-      .catch(() => {
-        setProducts(loadProducts());
-      });
+        });
+    };
+
+    refreshProducts();
 
     const storedCart = window.localStorage.getItem('gemtide-cart');
     if (storedCart) {
@@ -105,8 +114,16 @@ const LandingPage: React.FC = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 30);
     };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('focus', refreshProducts);
+    window.addEventListener('storage', refreshProducts);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('focus', refreshProducts);
+      window.removeEventListener('storage', refreshProducts);
+    };
   }, []);
 
   useEffect(() => {
