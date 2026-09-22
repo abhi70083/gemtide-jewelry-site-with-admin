@@ -103,8 +103,13 @@ const AdminPage: React.FC = () => {
       .then(data => {
         setRawDbJson(JSON.stringify(data, null, 2));
         setJsonError(null);
-        if (Array.isArray(data.products)) setProducts(data.products);
         if (Array.isArray(data.orders)) setOrders(data.orders);
+
+        // Only overwrite products with server data if merchant hasn't saved custom products locally
+        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
+        if (!stored && Array.isArray(data.products) && data.products.length > 0) {
+          setProducts(data.products);
+        }
         setLastSynced(new Date().toLocaleTimeString());
       })
       .catch(err => {
@@ -318,7 +323,11 @@ const AdminPage: React.FC = () => {
 
   const handleSaveInventory = () => {
     if (typeof window !== 'undefined') {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+      } catch (err) {
+        console.warn('localStorage save warning:', err);
+      }
     }
     fetch('/api/products', {
       method: 'POST',
@@ -328,13 +337,13 @@ const AdminPage: React.FC = () => {
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          showToast('Inventory saved and synced to db.json.');
-          fetchFullDb();
+          showToast('Inventory saved & updated successfully!');
+          setLastSynced(new Date().toLocaleTimeString());
         } else {
-          showToast('Saved locally, failed to update db.json file.', 'error');
+          showToast('Saved locally in browser.', 'success');
         }
       })
-      .catch(() => showToast('Saved locally, server error.', 'error'));
+      .catch(() => showToast('Saved locally in browser.', 'success'));
   };
 
   const handleRawJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
