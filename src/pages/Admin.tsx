@@ -105,7 +105,22 @@ const AdminPage: React.FC = () => {
         setJsonError(null);
         if (Array.isArray(data.orders)) setOrders(data.orders);
 
-        if (Array.isArray(data.products) && data.products.length > 0) {
+        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
+        if (stored) {
+          try {
+            const parsedStored = JSON.parse(stored);
+            if (Array.isArray(parsedStored) && parsedStored.length > 0) {
+              setProducts(parsedStored);
+            } else if (Array.isArray(data.products) && data.products.length > 0) {
+              setProducts(data.products);
+              window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data.products));
+            }
+          } catch {
+            if (Array.isArray(data.products) && data.products.length > 0) {
+              setProducts(data.products);
+            }
+          }
+        } else if (Array.isArray(data.products) && data.products.length > 0) {
           setProducts(data.products);
           if (typeof window !== 'undefined') {
             window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data.products));

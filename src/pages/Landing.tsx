@@ -79,6 +79,16 @@ const LandingPage: React.FC = () => {
       fetch('/api/products')
         .then(res => res.json())
         .then(data => {
+          const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
+          if (stored) {
+            try {
+              const parsedStored = JSON.parse(stored);
+              if (Array.isArray(parsedStored) && parsedStored.length > 0) {
+                setProducts(parsedStored.filter((p: Product) => p.active));
+                return;
+              }
+            } catch {}
+          }
           if (Array.isArray(data) && data.length > 0) {
             setProducts(data.filter(p => p.active));
             if (typeof window !== 'undefined') {
