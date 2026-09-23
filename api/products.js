@@ -5,6 +5,11 @@ const DB_PATH = path.resolve(process.cwd(), 'db.json');
 const GITHUB_REPO = process.env.GITHUB_REPO || 'abhi70083/gemtide-jewelry-site-with-admin';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 
+const getAuthHeader = (token) => {
+  if (token.startsWith('Bearer ') || token.startsWith('token ')) return token;
+  return `Bearer ${token}`;
+};
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -65,9 +70,10 @@ export default async function handler(req, res) {
       // If GITHUB_TOKEN is configured in Vercel environment variables, commit to GitHub
       if (GITHUB_TOKEN) {
         try {
+          const authHeader = getAuthHeader(GITHUB_TOKEN);
           const getFileRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/db.json`, {
             headers: {
-              'Authorization': `Bearer ${GITHUB_TOKEN}`,
+              'Authorization': authHeader,
               'Accept': 'application/vnd.github.v3+json',
               'User-Agent': 'Vercel-Serverless-Function'
             }
@@ -85,7 +91,7 @@ export default async function handler(req, res) {
             const putRes = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/db.json`, {
               method: 'PUT',
               headers: {
-                'Authorization': `Bearer ${GITHUB_TOKEN}`,
+                'Authorization': authHeader,
                 'Content-Type': 'application/json',
                 'User-Agent': 'Vercel-Serverless-Function'
               },
