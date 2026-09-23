@@ -7,46 +7,17 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // GET /api/orders
-  if (req.method === 'GET') {
-    try {
-      if (fs.existsSync(DB_PATH)) {
-        const fileData = fs.readFileSync(DB_PATH, 'utf-8');
-        const parsed = JSON.parse(fileData);
-        return res.status(200).json(parsed.orders || []);
-      }
-    } catch (e) {
-      console.warn('fs read failed, trying GitHub fallback', e);
-    }
-
-    try {
-      const ghRes = await fetch(`https://raw.githubusercontent.com/${GITHUB_REPO}/main/db.json`);
-      if (ghRes.ok) {
-        const parsed = await ghRes.json();
-        return res.status(200).json(parsed.orders || []);
-      }
-    } catch (err) {
-      console.error('GitHub fetch failed', err);
-    }
-
-    return res.status(200).json([]);
-  }
-
-  // POST /api/orders
   if (req.method === 'POST') {
     try {
-      const newOrder = req.body;
-      if (!newOrder || typeof newOrder !== 'object') {
-        return res.status(400).json({ error: 'Invalid order payload' });
-      }
-
+      const { productId, liked } = req.body || {};
+      let updatedLikes = 0;
       let fsWriteSuccess = false;
 
       // 1. Local filesystem update
@@ -54,19 +25,15 @@ export default async function handler(req, res) {
         if (fs.existsSync(DB_PATH)) {
           const fileData = fs.readFileSync(DB_PATH, 'utf-8');
           const parsed = JSON.parse(fileData);
-
-          if (!parsed.orders) parsed.orders = [];
-          parsed.orders.unshift(newOrder);
-
-          if (Array.isArray(newOrder.items)) {
-            newOrder.items.forEach(item => {
-              const prod = (parsed.products || []).find(p => p.name === item.name);
-              if (prod) {
-                prod.stock = Math.max(0, prod.stock - item.quantity);
-              }
-            });
+          const product = (parsed.products || []).find(p => p.id === productId);
+          if (product) {
+            if (liked) {
+              product.likes = (product.likes || 0) + 1;
+            } else {
+              product.likes = Math.max(0, (product.likes || 0) - 1);
+            }
+            updatedLikes = product.likes;
           }
-
           fs.writeFileSync(DB_PATH, JSON.stringify(parsed, null, 2), 'utf-8');
           fsWriteSuccess = true;
         }
@@ -90,17 +57,14 @@ export default async function handler(req, res) {
             const sha = fileJson.sha;
             const contentDecoded = Buffer.from(fileJson.content, 'base64').toString('utf-8');
             const parsed = JSON.parse(contentDecoded);
-
-            if (!parsed.orders) parsed.orders = [];
-            parsed.orders.unshift(newOrder);
-
-            if (Array.isArray(newOrder.items)) {
-              newOrder.items.forEach(item => {
-                const prod = (parsed.products || []).find(p => p.name === item.name);
-                if (prod) {
-                  prod.stock = Math.max(0, prod.stock - item.quantity);
-                }
-              });
+            const product = (parsed.products || []).find(p => p.id === productId);
+            if (product) {
+              if (liked) {
+                product.likes = (product.likes || 0) + 1;
+              } else {
+                product.likes = Math.max(0, (product.likes || 0) - 1);
+              }
+              updatedLikes = product.likes;
             }
 
             const updatedContentBase64 = Buffer.from(JSON.stringify(parsed, null, 2)).toString('base64');
@@ -113,7 +77,7 @@ export default async function handler(req, res) {
                 'User-Agent': 'Vercel-Serverless-Function'
               },
               body: JSON.stringify({
-                message: `chore: add order ${newOrder.id || ''} & update stock via Vercel`,
+                message: `chore: update likes for product ${productId} via Vercel`,
                 content: updatedContentBase64,
                 sha: sha,
                 branch: 'main'
@@ -121,17 +85,17 @@ export default async function handler(req, res) {
             });
 
             if (putRes.ok) {
-              return res.status(200).json({ success: true, syncedToGitHub: true });
+              return res.status(200).json({ success: true, likes: updatedLikes, syncedToGitHub: true });
             }
           }
         } catch (ghErr) {
-          console.error('Failed to commit order to GitHub via API:', ghErr);
+          console.error('Failed to commit product like to GitHub via API:', ghErr);
         }
       }
 
-      return res.status(200).json({ success: true, localOnly: !fsWriteSuccess });
+      return res.status(200).json({ success: true, likes: updatedLikes, localOnly: !fsWriteSuccess });
     } catch (err) {
-      return res.status(500).json({ error: 'Failed to save order: ' + err.message });
+      return res.status(500).json({ error: 'Failed to update likes: ' + err.message });
     }
   }
 

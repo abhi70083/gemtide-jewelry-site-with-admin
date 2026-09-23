@@ -105,10 +105,11 @@ const AdminPage: React.FC = () => {
         setJsonError(null);
         if (Array.isArray(data.orders)) setOrders(data.orders);
 
-        // Only overwrite products with server data if merchant hasn't saved custom products locally
-        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
-        if (!stored && Array.isArray(data.products) && data.products.length > 0) {
+        if (Array.isArray(data.products) && data.products.length > 0) {
           setProducts(data.products);
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data.products));
+          }
         }
         setLastSynced(new Date().toLocaleTimeString());
       })
@@ -125,35 +126,9 @@ const AdminPage: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  const isInitialMount = useRef(true);
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-    }
-
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-
-    if (products.length > 0) {
-      const timer = setTimeout(() => {
-        fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(products)
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              setLastSynced(new Date().toLocaleTimeString());
-            }
-          })
-          .catch(err => console.error('Failed to sync products to server:', err));
-      }, 500);
-
-      return () => clearTimeout(timer);
     }
   }, [products]);
 

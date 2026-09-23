@@ -80,11 +80,9 @@ const LandingPage: React.FC = () => {
         .then(res => res.json())
         .then(data => {
           if (Array.isArray(data) && data.length > 0) {
-            const localStored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
-            if (!localStored) {
-              setProducts(data.filter(p => p.active));
-            } else {
-              setProducts(loadProducts());
+            setProducts(data.filter(p => p.active));
+            if (typeof window !== 'undefined') {
+              window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             }
           } else {
             setProducts(loadProducts());
