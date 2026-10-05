@@ -108,20 +108,39 @@ const AdminPage: React.FC = () => {
         setJsonError(null);
         if (Array.isArray(data.orders)) setOrders(data.orders);
 
-        if (Array.isArray(data.products) && data.products.length > 0) {
+        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
+        if (stored) {
+          try {
+            const localProducts = JSON.parse(stored);
+            if (Array.isArray(localProducts) && localProducts.length > 0) {
+              if (Array.isArray(data.products) && JSON.stringify(localProducts) !== JSON.stringify(data.products)) {
+                // Local edits exist that differ from server db.json: keep local edits & sync to server!
+                setProducts(localProducts);
+                fetch('/api/products', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(localProducts)
+                }).catch(err => console.error('Failed to sync local products on load:', err));
+              } else if (Array.isArray(data.products) && data.products.length > 0) {
+                setProducts(data.products);
+              } else {
+                setProducts(localProducts);
+              }
+            } else if (Array.isArray(data.products) && data.products.length > 0) {
+              setProducts(data.products);
+              if (typeof window !== 'undefined') {
+                window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data.products));
+              }
+            }
+          } catch {
+            if (Array.isArray(data.products) && data.products.length > 0) {
+              setProducts(data.products);
+            }
+          }
+        } else if (Array.isArray(data.products) && data.products.length > 0) {
           setProducts(data.products);
           if (typeof window !== 'undefined') {
             window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data.products));
-          }
-        } else {
-          const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
-          if (stored) {
-            try {
-              const parsedStored = JSON.parse(stored);
-              if (Array.isArray(parsedStored) && parsedStored.length > 0) {
-                setProducts(parsedStored);
-              }
-            } catch {}
           }
         }
         setLastSynced(new Date().toLocaleTimeString());
@@ -180,10 +199,15 @@ const AdminPage: React.FC = () => {
           .then(data => {
             if (data.success) {
               setLastSynced(new Date().toLocaleTimeString());
+              try {
+                const currentDb = rawDbJson ? JSON.parse(rawDbJson) : {};
+                currentDb.products = products;
+                setRawDbJson(JSON.stringify(currentDb, null, 2));
+              } catch {}
             }
           })
           .catch(err => console.error('Failed to sync products to server:', err));
-      }, 500);
+      }, 200);
 
       return () => clearTimeout(timer);
     }
