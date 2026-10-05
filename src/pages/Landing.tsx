@@ -74,36 +74,50 @@ const LandingPage: React.FC = () => {
 
   const categories = ['All', 'Rings', 'Chains', 'Watches', 'Apparel'];
 
-  useEffect(() => {
-    const refreshProducts = () => {
-      fetch('/api/products')
-        .then(res => res.json())
-        .then(data => {
+  const refreshProducts = React.useCallback(() => {
+    fetch('/api/products')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch products');
+        return res.json();
+      })
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(data.filter((p: Product) => p.active !== false));
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          }
+        } else {
           const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
           if (stored) {
             try {
               const parsedStored = JSON.parse(stored);
               if (Array.isArray(parsedStored) && parsedStored.length > 0) {
-                setProducts(parsedStored.filter((p: Product) => p.active));
+                setProducts(parsedStored.filter((p: Product) => p.active !== false));
                 return;
               }
             } catch {}
           }
-          if (Array.isArray(data) && data.length > 0) {
-            setProducts(data.filter(p => p.active));
-            if (typeof window !== 'undefined') {
-              window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            }
-          } else {
-            setProducts(loadProducts());
-          }
-        })
-        .catch(() => {
           setProducts(loadProducts());
-        });
-    };
+        }
+      })
+      .catch(() => {
+        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
+        if (stored) {
+          try {
+            const parsedStored = JSON.parse(stored);
+            if (Array.isArray(parsedStored) && parsedStored.length > 0) {
+              setProducts(parsedStored.filter((p: Product) => p.active !== false));
+              return;
+            }
+          } catch {}
+        }
+        setProducts(loadProducts());
+      });
+  }, []);
 
+  useEffect(() => {
     refreshProducts();
+    const pollInterval = setInterval(refreshProducts, 3000);
 
     const storedCart = window.localStorage.getItem('gemtide-cart');
     if (storedCart) {
@@ -128,11 +142,12 @@ const LandingPage: React.FC = () => {
     window.addEventListener('storage', refreshProducts);
 
     return () => {
+      clearInterval(pollInterval);
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('focus', refreshProducts);
       window.removeEventListener('storage', refreshProducts);
     };
-  }, []);
+  }, [refreshProducts]);
 
   useEffect(() => {
     window.localStorage.setItem('gemtide-cart', JSON.stringify(cart));
@@ -298,6 +313,7 @@ Thank you for shopping with GemTide!`;
       .then(data => {
         if (data.success) {
           console.log('Order saved to database.');
+          refreshProducts();
         }
       })
       .catch(err => console.error('Error saving order:', err));

@@ -94,7 +94,10 @@ const AdminPage: React.FC = () => {
     return () => clearInterval(timer);
   }, [authStep, otpCountdown]);
 
+  const isFetchingDbRef = useRef(false);
+
   const fetchFullDb = () => {
+    isFetchingDbRef.current = true;
     fetch('/api/db')
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch DB');
@@ -105,33 +108,42 @@ const AdminPage: React.FC = () => {
         setJsonError(null);
         if (Array.isArray(data.orders)) setOrders(data.orders);
 
-        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
-        if (stored) {
-          try {
-            const parsedStored = JSON.parse(stored);
-            if (Array.isArray(parsedStored) && parsedStored.length > 0) {
-              setProducts(parsedStored);
-            } else if (Array.isArray(data.products) && data.products.length > 0) {
-              setProducts(data.products);
-              window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data.products));
-            }
-          } catch {
-            if (Array.isArray(data.products) && data.products.length > 0) {
-              setProducts(data.products);
-            }
-          }
-        } else if (Array.isArray(data.products) && data.products.length > 0) {
+        if (Array.isArray(data.products) && data.products.length > 0) {
           setProducts(data.products);
           if (typeof window !== 'undefined') {
             window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data.products));
+          }
+        } else {
+          const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
+          if (stored) {
+            try {
+              const parsedStored = JSON.parse(stored);
+              if (Array.isArray(parsedStored) && parsedStored.length > 0) {
+                setProducts(parsedStored);
+              }
+            } catch {}
           }
         }
         setLastSynced(new Date().toLocaleTimeString());
       })
       .catch(err => {
         console.error('Failed to load database:', err);
+        const stored = typeof window !== 'undefined' ? window.localStorage.getItem(STORAGE_KEY) : null;
+        if (stored) {
+          try {
+            const parsedStored = JSON.parse(stored);
+            if (Array.isArray(parsedStored) && parsedStored.length > 0) {
+              setProducts(parsedStored);
+            }
+          } catch {}
+        }
         const fallback = { products, orders };
         setRawDbJson(JSON.stringify(fallback, null, 2));
+      })
+      .finally(() => {
+        setTimeout(() => {
+          isFetchingDbRef.current = false;
+        }, 1000);
       });
   };
 
@@ -153,7 +165,11 @@ const AdminPage: React.FC = () => {
       return;
     }
 
-    if (products.length > 0) {
+    if (isFetchingDbRef.current) {
+      return;
+    }
+
+    if (products.length > 0 && isAuthenticated) {
       const timer = setTimeout(() => {
         fetch('/api/products', {
           method: 'POST',
@@ -171,7 +187,7 @@ const AdminPage: React.FC = () => {
 
       return () => clearTimeout(timer);
     }
-  }, [products]);
+  }, [products, isAuthenticated]);
 
   // Auth Functions
   const handleVerifySecurityKey = (e: React.FormEvent) => {
